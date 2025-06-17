@@ -1,0 +1,35 @@
+# Ray Training Requirements for MTR Model
+# This file contains additional dependencies needed for Ray training
+
+# Ray framework with training support
+ray[train]==2.9.0
+
+# PyTorch (adjust version based on your CUDA version)
+# torch>=1.12.0
+# torchvision>=0.13.0
+# torchaudio>=0.12.0
+
+# S3/MinIO object storage support
+boto3>=1.26.0
+s3fs>=2023.1.0
+fsspec[s3]>=2023.1.0
+
+# Data processing and serialization
+pyarrow>=10.0.0
+pandas>=1.5.0
+
+# Monitoring and logging
+tensorboardX>=2.5
+wandb>=0.13.0  # Optional: for advanced experiment tracking
+
+# Additional utilities
+pyyaml>=6.0
+tqdm>=4.64.0
+numpy>=1.21.0
+
+# Optional: For containerized deployments
+# kubernetes>=25.3.0
+
+# Optional: For advanced distributed features
+# horovod>=0.28.0  # Alternative distributed training framework
+# deepspeed>=0.8.0  # For large model training optimizations

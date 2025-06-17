@@ -1,0 +1,194 @@
+# Docker Compose for MTR Ray Training with MinIO
+version: '3.8'
+
+services:
+  # MinIO S3-compatible object storage
+  minio:
+    image: minio/minio:latest
+    container_name: mtr-minio
+    ports:
+      - "9000:9000"  # API port
+      - "9001:9001"  # Console port
+    volumes:
+      - minio_data:/data
+      - ./data:/import_data  # Mount local data for import
+    environment:
+      MINIO_ACCESS_KEY: minio_access_key
+      MINIO_SECRET_KEY: minio_secret_key
+      MINIO_REGION_NAME: us-east-1
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    networks:
+      - mtr-network
+
+  # MinIO client for initial setup
+  minio-setup:
+    image: minio/mc:latest
+    container_name: mtr-minio-setup
+    depends_on:
+      - minio
+    environment:
+      MINIO_ENDPOINT: http://minio:9000
+      MINIO_ACCESS_KEY: minio_access_key
+      MINIO_SECRET_KEY: minio_secret_key
+    volumes:
+      - ./data:/data
+      - ./scripts/setup_minio.sh:/setup_minio.sh
+    command: |
+      /bin/sh -c "
+      sleep 10
+      mc alias set myminio http://minio:9000 minio_access_key minio_secret_key
+      mc mb myminio/mtr-data --ignore-existing
+      mc mb myminio/mtr-training --ignore-existing
+      echo 'MinIO buckets created successfully'
+      "
+    networks:
+      - mtr-network
+
+  # Ray head node
+  ray-head:
+    build:
+      context: .
+      dockerfile: Dockerfile.ray
+      target: production
+    container_name: mtr-ray-head
+    ports:
+      - "8265:8265"  # Ray dashboard
+      - "10001:10001"  # Ray client server
+      - "6379:6379"  # Ray Redis
+    volumes:
+      - ray_logs:/tmp/ray
+      - ./output:/app/output
+    environment:
+      RAY_DISABLE_IMPORT_WARNING: 1
+      RAY_OBJECT_STORE_ALLOW_SLOW_STORAGE: 1
+      MINIO_ENDPOINT: http://minio:9000
+      MINIO_ACCESS_KEY: minio_access_key
+      MINIO_SECRET_KEY: minio_secret_key
+      AWS_ACCESS_KEY_ID: minio_access_key
+      AWS_SECRET_ACCESS_KEY: minio_secret_key
+      AWS_ENDPOINT_URL: http://minio:9000
+      AWS_REGION: us-east-1
+      AWS_S3_ALLOW_UNSAFE_RENAME: "true"
+      S3_DATA_ROOT: s3://mtr-data/waymo
+      STORAGE_PATH: s3://mtr-training
+    command: |
+      bash -c "
+      ray start --head --dashboard-host=0.0.0.0 --dashboard-port=8265 --port=6379 --object-store-memory=8000000000 --block
+      "
+    depends_on:
+      - minio
+      - minio-setup
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    networks:
+      - mtr-network
+
+  # Ray worker nodes (optional - scale as needed)
+  ray-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.ray
+      target: production
+    volumes:
+      - ray_logs:/tmp/ray
+    environment:
+      RAY_DISABLE_IMPORT_WARNING: 1
+      RAY_OBJECT_STORE_ALLOW_SLOW_STORAGE: 1
+      MINIO_ENDPOINT: http://minio:9000
+      MINIO_ACCESS_KEY: minio_access_key
+      MINIO_SECRET_KEY: minio_secret_key
+      AWS_ACCESS_KEY_ID: minio_access_key
+      AWS_SECRET_ACCESS_KEY: minio_secret_key
+      AWS_ENDPOINT_URL: http://minio:9000
+      AWS_REGION: us-east-1
+      AWS_S3_ALLOW_UNSAFE_RENAME: "true"
+    command: |
+      bash -c "
+      sleep 30
+      ray start --address=ray-head:6379 --block
+      "
+    depends_on:
+      - ray-head
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+      replicas: 2  # Number of worker containers
+    networks:
+      - mtr-network
+
+  # Training job runner
+  mtr-trainer:
+    build:
+      context: .
+      dockerfile: Dockerfile.ray
+      target: production
+    container_name: mtr-trainer
+    volumes:
+      - ./output:/app/output
+      - ray_logs:/tmp/ray
+    environment:
+      RAY_ADDRESS: ray://ray-head:10001
+      MINIO_ENDPOINT: http://minio:9000
+      MINIO_ACCESS_KEY: minio_access_key
+      MINIO_SECRET_KEY: minio_secret_key
+      AWS_ACCESS_KEY_ID: minio_access_key
+      AWS_SECRET_ACCESS_KEY: minio_secret_key
+      AWS_ENDPOINT_URL: http://minio:9000
+      AWS_REGION: us-east-1
+      AWS_S3_ALLOW_UNSAFE_RENAME: "true"
+      S3_DATA_ROOT: s3://mtr-data/waymo
+      STORAGE_PATH: s3://mtr-training
+    command: |
+      bash -c "
+      sleep 60
+      python tools/train_ray.py \
+        --cfg_file tools/cfgs/waymo/mtr_ray_training.yaml \
+        --num_workers 4 \
+        --batch_size 32 \
+        --epochs 50 \
+        --experiment_name docker_training \
+        --s3_data_root s3://mtr-data/waymo \
+        --storage_path s3://mtr-training \
+        --minio_endpoint http://minio:9000 \
+        --minio_access_key minio_access_key \
+        --minio_secret_key minio_secret_key \
+        --use_gpu
+      "
+    depends_on:
+      - ray-head
+      - ray-worker
+    profiles:
+      - training  # This service only runs when explicitly started
+    networks:
+      - mtr-network
+
+volumes:
+  minio_data:
+    driver: local
+  ray_logs:
+    driver: local
+
+networks:
+  mtr-network:
+    driver: bridge
+
+# Usage:
+# 1. Start infrastructure: docker-compose up -d minio ray-head ray-worker
+# 2. Check Ray dashboard: http://localhost:8265
+# 3. Check MinIO console: http://localhost:9001 (admin/password)
+# 4. Upload data to MinIO
+# 5. Start training: docker-compose --profile training up mtr-trainer

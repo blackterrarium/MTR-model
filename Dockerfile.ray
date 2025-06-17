@@ -1,0 +1,60 @@
+# Dockerfile for MTR Ray Training
+# Multi-stage build for optimized container size
+
+# Base stage with Ray and CUDA support
+FROM rayproject/ray:2.9.0-py310-gpu as base
+
+# Set environment variables
+ENV PYTHONPATH="/app:$PYTHONPATH"
+ENV RAY_TMPDIR="/tmp/ray"
+ENV RAY_OBJECT_STORE_ALLOW_SLOW_STORAGE=1
+
+# Install system dependencies
+USER root
+RUN apt-get update && apt-get install -y \
+    wget \
+    curl \
+    git \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Switch back to ray user
+USER ray
+
+# Set working directory
+WORKDIR /app
+
+# Copy requirements first for better Docker layer caching
+COPY requirements.txt requirements_ray.txt ./
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements_ray.txt
+
+# Production stage
+FROM base as production
+
+# Copy MTR source code
+COPY --chown=ray:ray . /app/
+
+# Create necessary directories
+RUN mkdir -p /app/output /app/data /tmp/ray
+
+# Set default environment variables
+ENV MINIO_ENDPOINT=""
+ENV MINIO_ACCESS_KEY=""
+ENV MINIO_SECRET_KEY=""
+ENV S3_DATA_ROOT="s3://mtr-data/waymo"
+ENV STORAGE_PATH="s3://mtr-training"
+ENV NUM_WORKERS="2"
+ENV USE_GPU="true"
+
+# Expose Ray ports
+EXPOSE 8265 10001 6379
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD python -c "import ray; ray.init(address='auto', ignore_reinit_error=True); print('Ray is healthy')" || exit 1
+
+# Default command
+CMD ["python", "tools/train_ray.py", "--cfg_file", "tools/cfgs/waymo/mtr_ray_training.yaml"]
