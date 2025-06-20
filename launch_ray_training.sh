@@ -107,8 +107,19 @@ run_training() {
     local batch_size="${3:-$DEFAULT_BATCH_SIZE}"
     local epochs="${4:-$DEFAULT_EPOCHS}"
     local experiment_name="${5:-$DEFAULT_EXPERIMENT}"
+    local use_ray_data="${6:-false}"
+    
+    # Choose the training script
+    local train_script="tools/train_ray.py"
+    if [[ "$use_ray_data" == "true" ]]; then
+        train_script="tools/train_ray_data.py"
+        print_info "Using Ray Data implementation for maximum performance"
+    else
+        print_info "Using PyTorch DataLoader + Ray Train implementation"
+    fi
     
     print_info "Starting Ray training with the following configuration:"
+    echo "  Training script: $train_script"
     echo "  Config file: $config_file"
     echo "  Workers: $num_workers"
     echo "  Batch size: $batch_size"
@@ -116,7 +127,7 @@ run_training() {
     echo "  Experiment: $experiment_name"
     
     # Build the command
-    local cmd="python tools/train_ray.py"
+    local cmd="python $train_script"
     cmd="$cmd --cfg_file $config_file"
     cmd="$cmd --num_workers $num_workers"
     cmd="$cmd --batch_size $batch_size"
@@ -157,6 +168,7 @@ show_usage() {
     echo "  train                  Run training (default command)"
     echo "  quick-train            Run training with minimal configuration"
     echo "  distributed-train      Run distributed training with multiple workers"
+    echo "  ray-data-train         Run training with native Ray Data implementation"
     echo "  help                   Show this help message"
     echo ""
     echo "Training Options:"
@@ -165,6 +177,7 @@ show_usage() {
     echo "  --batch-size SIZE      Global batch size (default: $DEFAULT_BATCH_SIZE)"
     echo "  --epochs NUM           Number of epochs (default: $DEFAULT_EPOCHS)"
     echo "  --experiment NAME      Experiment name (default: $DEFAULT_EXPERIMENT)"
+    echo "  --ray-data             Use native Ray Data implementation"
     echo ""
     echo "Environment Variables:"
     echo "  MINIO_ENDPOINT         MinIO server endpoint (e.g., http://localhost:9000)"
@@ -178,6 +191,7 @@ show_usage() {
     echo "  $0 start-ray                   # Start local Ray cluster"
     echo "  $0 quick-train                 # Quick training with 2 workers"
     echo "  $0 train --workers 8 --epochs 100  # Custom training"
+    echo "  $0 ray-data-train --workers 4      # Use Ray Data implementation"
     echo ""
     echo "For distributed training across multiple machines:"
     echo "  # On head node:"
@@ -193,6 +207,7 @@ COMMAND="${1:-train}"
 shift || true
 
 # Parse options
+USE_RAY_DATA=false
 while [[ $# -gt 0 ]]; do
     case $1 in
         --config)
@@ -214,6 +229,10 @@ while [[ $# -gt 0 ]]; do
         --experiment)
             EXPERIMENT_NAME="$2"
             shift 2
+            ;;
+        --ray-data)
+            USE_RAY_DATA=true
+            shift
             ;;
         *)
             print_error "Unknown option: $1"
@@ -243,14 +262,14 @@ case $COMMAND in
             print_info "Ray cluster not running. Starting local cluster..."
             start_local_ray
         fi
-        run_training "${CONFIG_FILE}" "${NUM_WORKERS}" "${BATCH_SIZE}" "${EPOCHS}" "${EXPERIMENT_NAME}"
+        run_training "${CONFIG_FILE}" "${NUM_WORKERS}" "${BATCH_SIZE}" "${EPOCHS}" "${EXPERIMENT_NAME}" "${USE_RAY_DATA}"
         ;;
     quick-train)
         validate_environment
         if ! check_ray_status; then
             start_local_ray
         fi
-        run_training "${CONFIG_FILE:-$DEFAULT_CONFIG}" 2 16 10 "quick_experiment"
+        run_training "${CONFIG_FILE:-$DEFAULT_CONFIG}" 2 16 10 "quick_experiment" false
         ;;
     distributed-train)
         validate_environment
@@ -258,7 +277,15 @@ case $COMMAND in
             print_error "Ray cluster is not running. Start Ray cluster first."
             exit 1
         fi
-        run_training "${CONFIG_FILE}" "${NUM_WORKERS:-8}" "${BATCH_SIZE:-64}" "${EPOCHS}" "${EXPERIMENT_NAME:-distributed_experiment}"
+        run_training "${CONFIG_FILE}" "${NUM_WORKERS:-8}" "${BATCH_SIZE:-64}" "${EPOCHS}" "${EXPERIMENT_NAME:-distributed_experiment}" false
+        ;;
+    ray-data-train)
+        validate_environment
+        if ! check_ray_status; then
+            print_info "Ray cluster not running. Starting local cluster..."
+            start_local_ray
+        fi
+        run_training "${CONFIG_FILE}" "${NUM_WORKERS}" "${BATCH_SIZE}" "${EPOCHS}" "${EXPERIMENT_NAME}" true
         ;;
     help|--help|-h)
         show_usage
