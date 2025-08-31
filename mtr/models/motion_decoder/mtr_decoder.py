@@ -551,4 +551,8 @@ class MTRDecoder(nn.Module):
 
             self.forward_ret_dict['center_objects_type'] = input_dict['center_objects_type']
 
+        # print (pred_trajs[0])
+        # print(input_dict['center_gt_trajs'][0])
+        # exit()
+
         return batch_dict

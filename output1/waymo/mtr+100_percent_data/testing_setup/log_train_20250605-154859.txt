@@ -1,0 +1,796 @@
+2025-06-05 15:48:59,850   INFO  **********************Start logging**********************
+2025-06-05 15:48:59,850   INFO  CUDA_VISIBLE_DEVICES=1,2,3
+2025-06-05 15:48:59,850   INFO  total_batch_size: 30
+2025-06-05 15:48:59,851   INFO  cfg_file         cfgs/waymo/mtr+100_percent_data.yaml
+2025-06-05 15:48:59,851   INFO  batch_size       10
+2025-06-05 15:48:59,851   INFO  epochs           30
+2025-06-05 15:48:59,851   INFO  workers          8
+2025-06-05 15:48:59,851   INFO  extra_tag        testing_setup
+2025-06-05 15:48:59,851   INFO  ckpt             None
+2025-06-05 15:48:59,851   INFO  pretrained_model None
+2025-06-05 15:48:59,851   INFO  launcher         pytorch
+2025-06-05 15:48:59,851   INFO  tcp_port         18888
+2025-06-05 15:48:59,851   INFO  without_sync_bn  False
+2025-06-05 15:48:59,851   INFO  fix_random_seed  False
+2025-06-05 15:48:59,851   INFO  ckpt_save_interval 2
+2025-06-05 15:48:59,851   INFO  local_rank       0
+2025-06-05 15:48:59,851   INFO  max_ckpt_save_num 5
+2025-06-05 15:48:59,851   INFO  merge_all_iters_to_one_epoch False
+2025-06-05 15:48:59,851   INFO  set_cfgs         None
+2025-06-05 15:48:59,851   INFO  max_waiting_mins 0
+2025-06-05 15:48:59,851   INFO  start_epoch      0
+2025-06-05 15:48:59,851   INFO  save_to_file     False
+2025-06-05 15:48:59,851   INFO  not_eval_with_train False
+2025-06-05 15:48:59,852   INFO  logger_iter_interval 50
+2025-06-05 15:48:59,852   INFO  ckpt_save_time_interval 300
+2025-06-05 15:48:59,852   INFO  add_worker_init_fn False
+2025-06-05 15:48:59,852   INFO  cfg.ROOT_DIR: /workspace/MTR-model
+2025-06-05 15:48:59,852   INFO  cfg.LOCAL_RANK: 0
+2025-06-05 15:48:59,852   INFO  
+cfg.DATA_CONFIG = edict()
+2025-06-05 15:48:59,852   INFO  cfg.DATA_CONFIG.DATASET: WaymoDataset
+2025-06-05 15:48:59,852   INFO  cfg.DATA_CONFIG.OBJECT_TYPE: ['TYPE_VEHICLE', 'TYPE_PEDESTRIAN', 'TYPE_CYCLIST']
+2025-06-05 15:48:59,852   INFO  cfg.DATA_CONFIG.DATA_ROOT: data/waymo
+2025-06-05 15:48:59,852   INFO  
+cfg.DATA_CONFIG.SPLIT_DIR = edict()
+2025-06-05 15:48:59,852   INFO  cfg.DATA_CONFIG.SPLIT_DIR.train: processed_scenarios_training
+2025-06-05 15:48:59,852   INFO  cfg.DATA_CONFIG.SPLIT_DIR.test: processed_scenarios_validation
+2025-06-05 15:48:59,852   INFO  
+cfg.DATA_CONFIG.INFO_FILE = edict()
+2025-06-05 15:48:59,852   INFO  cfg.DATA_CONFIG.INFO_FILE.train: processed_scenarios_training_infos.pkl
+2025-06-05 15:48:59,852   INFO  cfg.DATA_CONFIG.INFO_FILE.test: processed_scenarios_val_infos.pkl
+2025-06-05 15:48:59,852   INFO  
+cfg.DATA_CONFIG.SAMPLE_INTERVAL = edict()
+2025-06-05 15:48:59,852   INFO  cfg.DATA_CONFIG.SAMPLE_INTERVAL.train: 1
+2025-06-05 15:48:59,852   INFO  cfg.DATA_CONFIG.SAMPLE_INTERVAL.test: 1
+2025-06-05 15:48:59,852   INFO  
+cfg.DATA_CONFIG.INFO_FILTER_DICT = edict()
+2025-06-05 15:48:59,852   INFO  cfg.DATA_CONFIG.INFO_FILTER_DICT.filter_info_by_object_type: ['TYPE_VEHICLE', 'TYPE_PEDESTRIAN', 'TYPE_CYCLIST']
+2025-06-05 15:48:59,853   INFO  cfg.DATA_CONFIG.POINT_SAMPLED_INTERVAL: 1
+2025-06-05 15:48:59,853   INFO  cfg.DATA_CONFIG.NUM_POINTS_EACH_POLYLINE: 20
+2025-06-05 15:48:59,853   INFO  cfg.DATA_CONFIG.VECTOR_BREAK_DIST_THRESH: 1.0
+2025-06-05 15:48:59,853   INFO  cfg.DATA_CONFIG.NUM_OF_SRC_POLYLINES: 768
+2025-06-05 15:48:59,853   INFO  cfg.DATA_CONFIG.CENTER_OFFSET_OF_MAP: [30.0, 0]
+2025-06-05 15:48:59,853   INFO  
+cfg.MODEL = edict()
+2025-06-05 15:48:59,853   INFO  
+cfg.MODEL.CONTEXT_ENCODER = edict()
+2025-06-05 15:48:59,853   INFO  cfg.MODEL.CONTEXT_ENCODER.NAME: MTREncoder
+2025-06-05 15:48:59,853   INFO  cfg.MODEL.CONTEXT_ENCODER.NUM_OF_ATTN_NEIGHBORS: 16
+2025-06-05 15:48:59,853   INFO  cfg.MODEL.CONTEXT_ENCODER.NUM_INPUT_ATTR_AGENT: 29
+2025-06-05 15:48:59,853   INFO  cfg.MODEL.CONTEXT_ENCODER.NUM_INPUT_ATTR_MAP: 9
+2025-06-05 15:48:59,853   INFO  cfg.MODEL.CONTEXT_ENCODER.NUM_CHANNEL_IN_MLP_AGENT: 256
+2025-06-05 15:48:59,853   INFO  cfg.MODEL.CONTEXT_ENCODER.NUM_CHANNEL_IN_MLP_MAP: 64
+2025-06-05 15:48:59,853   INFO  cfg.MODEL.CONTEXT_ENCODER.NUM_LAYER_IN_MLP_AGENT: 3
+2025-06-05 15:48:59,853   INFO  cfg.MODEL.CONTEXT_ENCODER.NUM_LAYER_IN_MLP_MAP: 5
+2025-06-05 15:48:59,853   INFO  cfg.MODEL.CONTEXT_ENCODER.NUM_LAYER_IN_PRE_MLP_MAP: 3
+2025-06-05 15:48:59,853   INFO  cfg.MODEL.CONTEXT_ENCODER.D_MODEL: 256
+2025-06-05 15:48:59,853   INFO  cfg.MODEL.CONTEXT_ENCODER.NUM_ATTN_LAYERS: 6
+2025-06-05 15:48:59,853   INFO  cfg.MODEL.CONTEXT_ENCODER.NUM_ATTN_HEAD: 8
+2025-06-05 15:48:59,853   INFO  cfg.MODEL.CONTEXT_ENCODER.DROPOUT_OF_ATTN: 0.1
+2025-06-05 15:48:59,854   INFO  cfg.MODEL.CONTEXT_ENCODER.USE_LOCAL_ATTN: True
+2025-06-05 15:48:59,854   INFO  
+cfg.MODEL.MOTION_DECODER = edict()
+2025-06-05 15:48:59,854   INFO  cfg.MODEL.MOTION_DECODER.NAME: MTRDecoder
+2025-06-05 15:48:59,854   INFO  cfg.MODEL.MOTION_DECODER.OBJECT_TYPE: ['TYPE_VEHICLE', 'TYPE_PEDESTRIAN', 'TYPE_CYCLIST']
+2025-06-05 15:48:59,854   INFO  cfg.MODEL.MOTION_DECODER.CENTER_OFFSET_OF_MAP: [30.0, 0]
+2025-06-05 15:48:59,854   INFO  cfg.MODEL.MOTION_DECODER.NUM_FUTURE_FRAMES: 80
+2025-06-05 15:48:59,854   INFO  cfg.MODEL.MOTION_DECODER.NUM_MOTION_MODES: 6
+2025-06-05 15:48:59,854   INFO  cfg.MODEL.MOTION_DECODER.INTENTION_POINTS_FILE: data/waymo/cluster_64_center_dict.pkl
+2025-06-05 15:48:59,854   INFO  cfg.MODEL.MOTION_DECODER.D_MODEL: 512
+2025-06-05 15:48:59,854   INFO  cfg.MODEL.MOTION_DECODER.NUM_DECODER_LAYERS: 6
+2025-06-05 15:48:59,854   INFO  cfg.MODEL.MOTION_DECODER.NUM_ATTN_HEAD: 8
+2025-06-05 15:48:59,854   INFO  cfg.MODEL.MOTION_DECODER.MAP_D_MODEL: 256
+2025-06-05 15:48:59,854   INFO  cfg.MODEL.MOTION_DECODER.DROPOUT_OF_ATTN: 0.1
+2025-06-05 15:48:59,854   INFO  cfg.MODEL.MOTION_DECODER.NUM_BASE_MAP_POLYLINES: 256
+2025-06-05 15:48:59,854   INFO  cfg.MODEL.MOTION_DECODER.NUM_WAYPOINT_MAP_POLYLINES: 128
+2025-06-05 15:48:59,854   INFO  
+cfg.MODEL.MOTION_DECODER.LOSS_WEIGHTS = edict()
+2025-06-05 15:48:59,854   INFO  cfg.MODEL.MOTION_DECODER.LOSS_WEIGHTS.cls: 1.0
+2025-06-05 15:48:59,854   INFO  cfg.MODEL.MOTION_DECODER.LOSS_WEIGHTS.reg: 1.0
+2025-06-05 15:48:59,854   INFO  cfg.MODEL.MOTION_DECODER.LOSS_WEIGHTS.vel: 0.5
+2025-06-05 15:48:59,854   INFO  cfg.MODEL.MOTION_DECODER.NMS_DIST_THRESH: 2.5
+2025-06-05 15:48:59,854   INFO  
+cfg.OPTIMIZATION = edict()
+2025-06-05 15:48:59,855   INFO  cfg.OPTIMIZATION.BATCH_SIZE_PER_GPU: 10
+2025-06-05 15:48:59,855   INFO  cfg.OPTIMIZATION.NUM_EPOCHS: 30
+2025-06-05 15:48:59,855   INFO  cfg.OPTIMIZATION.OPTIMIZER: AdamW
+2025-06-05 15:48:59,855   INFO  cfg.OPTIMIZATION.LR: 0.0001
+2025-06-05 15:48:59,855   INFO  cfg.OPTIMIZATION.WEIGHT_DECAY: 0.01
+2025-06-05 15:48:59,855   INFO  cfg.OPTIMIZATION.SCHEDULER: lambdaLR
+2025-06-05 15:48:59,855   INFO  cfg.OPTIMIZATION.DECAY_STEP_LIST: [22, 24, 26, 28]
+2025-06-05 15:48:59,855   INFO  cfg.OPTIMIZATION.LR_DECAY: 0.5
+2025-06-05 15:48:59,855   INFO  cfg.OPTIMIZATION.LR_CLIP: 1e-06
+2025-06-05 15:48:59,855   INFO  cfg.OPTIMIZATION.GRAD_NORM_CLIP: 1000.0
+2025-06-05 15:48:59,855   INFO  cfg.TAG: mtr+100_percent_data
+2025-06-05 15:48:59,855   INFO  cfg.EXP_GROUP_PATH: waymo
+2025-06-05 15:48:59,862   INFO  Start to load infos from /workspace/MTR-model/data/waymo/processed_scenarios_training_infos.pkl
+2025-06-05 15:49:06,332   INFO  Total scenes before filters: 487002
+2025-06-05 15:49:12,308   INFO  Total scenes after filter_info_by_object_type: 487002
+2025-06-05 15:49:12,317   INFO  Total scenes after filters: 487002
+2025-06-05 15:49:17,560   INFO  DistributedDataParallel(
+  (module): MotionTransformer(
+    (context_encoder): MTREncoder(
+      (agent_polyline_encoder): PointNetPolylineEncoder(
+        (pre_mlps): Sequential(
+          (0): Linear(in_features=30, out_features=256, bias=False)
+          (1): SyncBatchNorm(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (2): ReLU()
+        )
+        (mlps): Sequential(
+          (0): Linear(in_features=512, out_features=256, bias=False)
+          (1): SyncBatchNorm(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (2): ReLU()
+          (3): Linear(in_features=256, out_features=256, bias=False)
+          (4): SyncBatchNorm(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (5): ReLU()
+        )
+        (out_mlps): Sequential(
+          (0): Linear(in_features=256, out_features=256, bias=True)
+          (1): ReLU()
+          (2): Linear(in_features=256, out_features=256, bias=True)
+        )
+      )
+      (map_polyline_encoder): PointNetPolylineEncoder(
+        (pre_mlps): Sequential(
+          (0): Linear(in_features=9, out_features=64, bias=False)
+          (1): SyncBatchNorm(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (2): ReLU()
+          (3): Linear(in_features=64, out_features=64, bias=False)
+          (4): SyncBatchNorm(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (5): ReLU()
+          (6): Linear(in_features=64, out_features=64, bias=False)
+          (7): SyncBatchNorm(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (8): ReLU()
+        )
+        (mlps): Sequential(
+          (0): Linear(in_features=128, out_features=64, bias=False)
+          (1): SyncBatchNorm(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (2): ReLU()
+          (3): Linear(in_features=64, out_features=64, bias=False)
+          (4): SyncBatchNorm(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (5): ReLU()
+        )
+        (out_mlps): Sequential(
+          (0): Linear(in_features=64, out_features=64, bias=True)
+          (1): ReLU()
+          (2): Linear(in_features=64, out_features=256, bias=True)
+        )
+      )
+      (self_attn_layers): ModuleList(
+        (0): TransformerEncoderLayer(
+          (self_attn): MultiheadAttentionLocal(
+            (out_proj): Linear(in_features=256, out_features=256, bias=True)
+          )
+          (linear1): Linear(in_features=256, out_features=1024, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (linear2): Linear(in_features=1024, out_features=256, bias=True)
+          (norm1): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+          (norm2): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+          (dropout1): Dropout(p=0.1, inplace=False)
+          (dropout2): Dropout(p=0.1, inplace=False)
+        )
+        (1): TransformerEncoderLayer(
+          (self_attn): MultiheadAttentionLocal(
+            (out_proj): Linear(in_features=256, out_features=256, bias=True)
+          )
+          (linear1): Linear(in_features=256, out_features=1024, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (linear2): Linear(in_features=1024, out_features=256, bias=True)
+          (norm1): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+          (norm2): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+          (dropout1): Dropout(p=0.1, inplace=False)
+          (dropout2): Dropout(p=0.1, inplace=False)
+        )
+        (2): TransformerEncoderLayer(
+          (self_attn): MultiheadAttentionLocal(
+            (out_proj): Linear(in_features=256, out_features=256, bias=True)
+          )
+          (linear1): Linear(in_features=256, out_features=1024, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (linear2): Linear(in_features=1024, out_features=256, bias=True)
+          (norm1): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+          (norm2): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+          (dropout1): Dropout(p=0.1, inplace=False)
+          (dropout2): Dropout(p=0.1, inplace=False)
+        )
+        (3): TransformerEncoderLayer(
+          (self_attn): MultiheadAttentionLocal(
+            (out_proj): Linear(in_features=256, out_features=256, bias=True)
+          )
+          (linear1): Linear(in_features=256, out_features=1024, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (linear2): Linear(in_features=1024, out_features=256, bias=True)
+          (norm1): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+          (norm2): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+          (dropout1): Dropout(p=0.1, inplace=False)
+          (dropout2): Dropout(p=0.1, inplace=False)
+        )
+        (4): TransformerEncoderLayer(
+          (self_attn): MultiheadAttentionLocal(
+            (out_proj): Linear(in_features=256, out_features=256, bias=True)
+          )
+          (linear1): Linear(in_features=256, out_features=1024, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (linear2): Linear(in_features=1024, out_features=256, bias=True)
+          (norm1): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+          (norm2): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+          (dropout1): Dropout(p=0.1, inplace=False)
+          (dropout2): Dropout(p=0.1, inplace=False)
+        )
+        (5): TransformerEncoderLayer(
+          (self_attn): MultiheadAttentionLocal(
+            (out_proj): Linear(in_features=256, out_features=256, bias=True)
+          )
+          (linear1): Linear(in_features=256, out_features=1024, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (linear2): Linear(in_features=1024, out_features=256, bias=True)
+          (norm1): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+          (norm2): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+          (dropout1): Dropout(p=0.1, inplace=False)
+          (dropout2): Dropout(p=0.1, inplace=False)
+        )
+      )
+    )
+    (motion_decoder): MTRDecoder(
+      (in_proj_center_obj): Sequential(
+        (0): Linear(in_features=256, out_features=512, bias=True)
+        (1): ReLU()
+        (2): Linear(in_features=512, out_features=512, bias=True)
+      )
+      (in_proj_obj): Sequential(
+        (0): Linear(in_features=256, out_features=512, bias=True)
+        (1): ReLU()
+        (2): Linear(in_features=512, out_features=512, bias=True)
+      )
+      (obj_decoder_layers): ModuleList(
+        (0): TransformerDecoderLayer(
+          (sa_qcontent_proj): Linear(in_features=512, out_features=512, bias=True)
+          (sa_qpos_proj): Linear(in_features=512, out_features=512, bias=True)
+          (sa_kcontent_proj): Linear(in_features=512, out_features=512, bias=True)
+          (sa_kpos_proj): Linear(in_features=512, out_features=512, bias=True)
+          (sa_v_proj): Linear(in_features=512, out_features=512, bias=True)
+          (self_attn): MultiheadAttention(
+            (out_proj): Linear(in_features=512, out_features=512, bias=True)
+          )
+          (norm1): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+          (dropout1): Dropout(p=0.1, inplace=False)
+          (ca_qcontent_proj): Linear(in_features=512, out_features=512, bias=True)
+          (ca_qpos_proj): Linear(in_features=512, out_features=512, bias=True)
+          (ca_kcontent_proj): Linear(in_features=512, out_features=512, bias=True)
+          (ca_kpos_proj): Linear(in_features=512, out_features=512, bias=True)
+          (ca_v_proj): Linear(in_features=512, out_features=512, bias=True)
+          (ca_qpos_sine_proj): Linear(in_features=512, out_features=512, bias=True)
+          (cross_attn): MultiheadAttention(
+            (out_proj): Linear(in_features=512, out_features=512, bias=True)
+          )
+          (linear1): Linear(in_features=512, out_features=2048, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (linear2): Linear(in_features=2048, out_features=512, bias=True)
+          (norm2): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+          (norm3): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+          (dropout2): Dropout(p=0.1, inplace=False)
+          (dropout3): Dropout(p=0.1, inplace=False)
+        )
+        (1): TransformerDecoderLayer(
+          (sa_qcontent_proj): Linear(in_features=512, out_features=512, bias=True)
+          (sa_qpos_proj): Linear(in_features=512, out_features=512, bias=True)
+          (sa_kcontent_proj): Linear(in_features=512, out_features=512, bias=True)
+          (sa_kpos_proj): Linear(in_features=512, out_features=512, bias=True)
+          (sa_v_proj): Linear(in_features=512, out_features=512, bias=True)
+          (self_attn): MultiheadAttention(
+            (out_proj): Linear(in_features=512, out_features=512, bias=True)
+          )
+          (norm1): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+          (dropout1): Dropout(p=0.1, inplace=False)
+          (ca_qcontent_proj): Linear(in_features=512, out_features=512, bias=True)
+          (ca_qpos_proj): Linear(in_features=512, out_features=512, bias=True)
+          (ca_kcontent_proj): Linear(in_features=512, out_features=512, bias=True)
+          (ca_kpos_proj): Linear(in_features=512, out_features=512, bias=True)
+          (ca_v_proj): Linear(in_features=512, out_features=512, bias=True)
+          (ca_qpos_sine_proj): Linear(in_features=512, out_features=512, bias=True)
+          (cross_attn): MultiheadAttention(
+            (out_proj): Linear(in_features=512, out_features=512, bias=True)
+          )
+          (linear1): Linear(in_features=512, out_features=2048, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (linear2): Linear(in_features=2048, out_features=512, bias=True)
+          (norm2): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+          (norm3): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+          (dropout2): Dropout(p=0.1, inplace=False)
+          (dropout3): Dropout(p=0.1, inplace=False)
+        )
+        (2): TransformerDecoderLayer(
+          (sa_qcontent_proj): Linear(in_features=512, out_features=512, bias=True)
+          (sa_qpos_proj): Linear(in_features=512, out_features=512, bias=True)
+          (sa_kcontent_proj): Linear(in_features=512, out_features=512, bias=True)
+          (sa_kpos_proj): Linear(in_features=512, out_features=512, bias=True)
+          (sa_v_proj): Linear(in_features=512, out_features=512, bias=True)
+          (self_attn): MultiheadAttention(
+            (out_proj): Linear(in_features=512, out_features=512, bias=True)
+          )
+          (norm1): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+          (dropout1): Dropout(p=0.1, inplace=False)
+          (ca_qcontent_proj): Linear(in_features=512, out_features=512, bias=True)
+          (ca_qpos_proj): Linear(in_features=512, out_features=512, bias=True)
+          (ca_kcontent_proj): Linear(in_features=512, out_features=512, bias=True)
+          (ca_kpos_proj): Linear(in_features=512, out_features=512, bias=True)
+          (ca_v_proj): Linear(in_features=512, out_features=512, bias=True)
+          (ca_qpos_sine_proj): Linear(in_features=512, out_features=512, bias=True)
+          (cross_attn): MultiheadAttention(
+            (out_proj): Linear(in_features=512, out_features=512, bias=True)
+          )
+          (linear1): Linear(in_features=512, out_features=2048, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (linear2): Linear(in_features=2048, out_features=512, bias=True)
+          (norm2): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+          (norm3): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+          (dropout2): Dropout(p=0.1, inplace=False)
+          (dropout3): Dropout(p=0.1, inplace=False)
+        )
+        (3): TransformerDecoderLayer(
+          (sa_qcontent_proj): Linear(in_features=512, out_features=512, bias=True)
+          (sa_qpos_proj): Linear(in_features=512, out_features=512, bias=True)
+          (sa_kcontent_proj): Linear(in_features=512, out_features=512, bias=True)
+          (sa_kpos_proj): Linear(in_features=512, out_features=512, bias=True)
+          (sa_v_proj): Linear(in_features=512, out_features=512, bias=True)
+          (self_attn): MultiheadAttention(
+            (out_proj): Linear(in_features=512, out_features=512, bias=True)
+          )
+          (norm1): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+          (dropout1): Dropout(p=0.1, inplace=False)
+          (ca_qcontent_proj): Linear(in_features=512, out_features=512, bias=True)
+          (ca_qpos_proj): Linear(in_features=512, out_features=512, bias=True)
+          (ca_kcontent_proj): Linear(in_features=512, out_features=512, bias=True)
+          (ca_kpos_proj): Linear(in_features=512, out_features=512, bias=True)
+          (ca_v_proj): Linear(in_features=512, out_features=512, bias=True)
+          (ca_qpos_sine_proj): Linear(in_features=512, out_features=512, bias=True)
+          (cross_attn): MultiheadAttention(
+            (out_proj): Linear(in_features=512, out_features=512, bias=True)
+          )
+          (linear1): Linear(in_features=512, out_features=2048, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (linear2): Linear(in_features=2048, out_features=512, bias=True)
+          (norm2): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+          (norm3): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+          (dropout2): Dropout(p=0.1, inplace=False)
+          (dropout3): Dropout(p=0.1, inplace=False)
+        )
+        (4): TransformerDecoderLayer(
+          (sa_qcontent_proj): Linear(in_features=512, out_features=512, bias=True)
+          (sa_qpos_proj): Linear(in_features=512, out_features=512, bias=True)
+          (sa_kcontent_proj): Linear(in_features=512, out_features=512, bias=True)
+          (sa_kpos_proj): Linear(in_features=512, out_features=512, bias=True)
+          (sa_v_proj): Linear(in_features=512, out_features=512, bias=True)
+          (self_attn): MultiheadAttention(
+            (out_proj): Linear(in_features=512, out_features=512, bias=True)
+          )
+          (norm1): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+          (dropout1): Dropout(p=0.1, inplace=False)
+          (ca_qcontent_proj): Linear(in_features=512, out_features=512, bias=True)
+          (ca_qpos_proj): Linear(in_features=512, out_features=512, bias=True)
+          (ca_kcontent_proj): Linear(in_features=512, out_features=512, bias=True)
+          (ca_kpos_proj): Linear(in_features=512, out_features=512, bias=True)
+          (ca_v_proj): Linear(in_features=512, out_features=512, bias=True)
+          (ca_qpos_sine_proj): Linear(in_features=512, out_features=512, bias=True)
+          (cross_attn): MultiheadAttention(
+            (out_proj): Linear(in_features=512, out_features=512, bias=True)
+          )
+          (linear1): Linear(in_features=512, out_features=2048, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (linear2): Linear(in_features=2048, out_features=512, bias=True)
+          (norm2): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+          (norm3): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+          (dropout2): Dropout(p=0.1, inplace=False)
+          (dropout3): Dropout(p=0.1, inplace=False)
+        )
+        (5): TransformerDecoderLayer(
+          (sa_qcontent_proj): Linear(in_features=512, out_features=512, bias=True)
+          (sa_qpos_proj): Linear(in_features=512, out_features=512, bias=True)
+          (sa_kcontent_proj): Linear(in_features=512, out_features=512, bias=True)
+          (sa_kpos_proj): Linear(in_features=512, out_features=512, bias=True)
+          (sa_v_proj): Linear(in_features=512, out_features=512, bias=True)
+          (self_attn): MultiheadAttention(
+            (out_proj): Linear(in_features=512, out_features=512, bias=True)
+          )
+          (norm1): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+          (dropout1): Dropout(p=0.1, inplace=False)
+          (ca_qcontent_proj): Linear(in_features=512, out_features=512, bias=True)
+          (ca_qpos_proj): Linear(in_features=512, out_features=512, bias=True)
+          (ca_kcontent_proj): Linear(in_features=512, out_features=512, bias=True)
+          (ca_kpos_proj): Linear(in_features=512, out_features=512, bias=True)
+          (ca_v_proj): Linear(in_features=512, out_features=512, bias=True)
+          (ca_qpos_sine_proj): Linear(in_features=512, out_features=512, bias=True)
+          (cross_attn): MultiheadAttention(
+            (out_proj): Linear(in_features=512, out_features=512, bias=True)
+          )
+          (linear1): Linear(in_features=512, out_features=2048, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (linear2): Linear(in_features=2048, out_features=512, bias=True)
+          (norm2): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+          (norm3): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+          (dropout2): Dropout(p=0.1, inplace=False)
+          (dropout3): Dropout(p=0.1, inplace=False)
+        )
+      )
+      (in_proj_map): Sequential(
+        (0): Linear(in_features=256, out_features=256, bias=True)
+        (1): ReLU()
+        (2): Linear(in_features=256, out_features=256, bias=True)
+      )
+      (map_decoder_layers): ModuleList(
+        (0): TransformerDecoderLayer(
+          (sa_qcontent_proj): Linear(in_features=256, out_features=256, bias=True)
+          (sa_qpos_proj): Linear(in_features=256, out_features=256, bias=True)
+          (sa_kcontent_proj): Linear(in_features=256, out_features=256, bias=True)
+          (sa_kpos_proj): Linear(in_features=256, out_features=256, bias=True)
+          (sa_v_proj): Linear(in_features=256, out_features=256, bias=True)
+          (self_attn): MultiheadAttention(
+            (out_proj): Linear(in_features=256, out_features=256, bias=True)
+          )
+          (norm1): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+          (dropout1): Dropout(p=0.1, inplace=False)
+          (ca_qcontent_proj): Linear(in_features=256, out_features=256, bias=True)
+          (ca_qpos_proj): Linear(in_features=256, out_features=256, bias=True)
+          (ca_kcontent_proj): Linear(in_features=256, out_features=256, bias=True)
+          (ca_kpos_proj): Linear(in_features=256, out_features=256, bias=True)
+          (ca_v_proj): Linear(in_features=256, out_features=256, bias=True)
+          (ca_qpos_sine_proj): Linear(in_features=256, out_features=256, bias=True)
+          (cross_attn): MultiheadAttentionLocal(
+            (out_proj): Linear(in_features=256, out_features=256, bias=True)
+          )
+          (linear1): Linear(in_features=256, out_features=1024, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (linear2): Linear(in_features=1024, out_features=256, bias=True)
+          (norm2): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+          (norm3): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+          (dropout2): Dropout(p=0.1, inplace=False)
+          (dropout3): Dropout(p=0.1, inplace=False)
+        )
+        (1): TransformerDecoderLayer(
+          (sa_qcontent_proj): Linear(in_features=256, out_features=256, bias=True)
+          (sa_qpos_proj): Linear(in_features=256, out_features=256, bias=True)
+          (sa_kcontent_proj): Linear(in_features=256, out_features=256, bias=True)
+          (sa_kpos_proj): Linear(in_features=256, out_features=256, bias=True)
+          (sa_v_proj): Linear(in_features=256, out_features=256, bias=True)
+          (self_attn): MultiheadAttention(
+            (out_proj): Linear(in_features=256, out_features=256, bias=True)
+          )
+          (norm1): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+          (dropout1): Dropout(p=0.1, inplace=False)
+          (ca_qcontent_proj): Linear(in_features=256, out_features=256, bias=True)
+          (ca_qpos_proj): Linear(in_features=256, out_features=256, bias=True)
+          (ca_kcontent_proj): Linear(in_features=256, out_features=256, bias=True)
+          (ca_kpos_proj): Linear(in_features=256, out_features=256, bias=True)
+          (ca_v_proj): Linear(in_features=256, out_features=256, bias=True)
+          (ca_qpos_sine_proj): Linear(in_features=256, out_features=256, bias=True)
+          (cross_attn): MultiheadAttentionLocal(
+            (out_proj): Linear(in_features=256, out_features=256, bias=True)
+          )
+          (linear1): Linear(in_features=256, out_features=1024, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (linear2): Linear(in_features=1024, out_features=256, bias=True)
+          (norm2): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+          (norm3): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+          (dropout2): Dropout(p=0.1, inplace=False)
+          (dropout3): Dropout(p=0.1, inplace=False)
+        )
+        (2): TransformerDecoderLayer(
+          (sa_qcontent_proj): Linear(in_features=256, out_features=256, bias=True)
+          (sa_qpos_proj): Linear(in_features=256, out_features=256, bias=True)
+          (sa_kcontent_proj): Linear(in_features=256, out_features=256, bias=True)
+          (sa_kpos_proj): Linear(in_features=256, out_features=256, bias=True)
+          (sa_v_proj): Linear(in_features=256, out_features=256, bias=True)
+          (self_attn): MultiheadAttention(
+            (out_proj): Linear(in_features=256, out_features=256, bias=True)
+          )
+          (norm1): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+          (dropout1): Dropout(p=0.1, inplace=False)
+          (ca_qcontent_proj): Linear(in_features=256, out_features=256, bias=True)
+          (ca_qpos_proj): Linear(in_features=256, out_features=256, bias=True)
+          (ca_kcontent_proj): Linear(in_features=256, out_features=256, bias=True)
+          (ca_kpos_proj): Linear(in_features=256, out_features=256, bias=True)
+          (ca_v_proj): Linear(in_features=256, out_features=256, bias=True)
+          (ca_qpos_sine_proj): Linear(in_features=256, out_features=256, bias=True)
+          (cross_attn): MultiheadAttentionLocal(
+            (out_proj): Linear(in_features=256, out_features=256, bias=True)
+          )
+          (linear1): Linear(in_features=256, out_features=1024, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (linear2): Linear(in_features=1024, out_features=256, bias=True)
+          (norm2): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+          (norm3): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+          (dropout2): Dropout(p=0.1, inplace=False)
+          (dropout3): Dropout(p=0.1, inplace=False)
+        )
+        (3): TransformerDecoderLayer(
+          (sa_qcontent_proj): Linear(in_features=256, out_features=256, bias=True)
+          (sa_qpos_proj): Linear(in_features=256, out_features=256, bias=True)
+          (sa_kcontent_proj): Linear(in_features=256, out_features=256, bias=True)
+          (sa_kpos_proj): Linear(in_features=256, out_features=256, bias=True)
+          (sa_v_proj): Linear(in_features=256, out_features=256, bias=True)
+          (self_attn): MultiheadAttention(
+            (out_proj): Linear(in_features=256, out_features=256, bias=True)
+          )
+          (norm1): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+          (dropout1): Dropout(p=0.1, inplace=False)
+          (ca_qcontent_proj): Linear(in_features=256, out_features=256, bias=True)
+          (ca_qpos_proj): Linear(in_features=256, out_features=256, bias=True)
+          (ca_kcontent_proj): Linear(in_features=256, out_features=256, bias=True)
+          (ca_kpos_proj): Linear(in_features=256, out_features=256, bias=True)
+          (ca_v_proj): Linear(in_features=256, out_features=256, bias=True)
+          (ca_qpos_sine_proj): Linear(in_features=256, out_features=256, bias=True)
+          (cross_attn): MultiheadAttentionLocal(
+            (out_proj): Linear(in_features=256, out_features=256, bias=True)
+          )
+          (linear1): Linear(in_features=256, out_features=1024, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (linear2): Linear(in_features=1024, out_features=256, bias=True)
+          (norm2): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+          (norm3): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+          (dropout2): Dropout(p=0.1, inplace=False)
+          (dropout3): Dropout(p=0.1, inplace=False)
+        )
+        (4): TransformerDecoderLayer(
+          (sa_qcontent_proj): Linear(in_features=256, out_features=256, bias=True)
+          (sa_qpos_proj): Linear(in_features=256, out_features=256, bias=True)
+          (sa_kcontent_proj): Linear(in_features=256, out_features=256, bias=True)
+          (sa_kpos_proj): Linear(in_features=256, out_features=256, bias=True)
+          (sa_v_proj): Linear(in_features=256, out_features=256, bias=True)
+          (self_attn): MultiheadAttention(
+            (out_proj): Linear(in_features=256, out_features=256, bias=True)
+          )
+          (norm1): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+          (dropout1): Dropout(p=0.1, inplace=False)
+          (ca_qcontent_proj): Linear(in_features=256, out_features=256, bias=True)
+          (ca_qpos_proj): Linear(in_features=256, out_features=256, bias=True)
+          (ca_kcontent_proj): Linear(in_features=256, out_features=256, bias=True)
+          (ca_kpos_proj): Linear(in_features=256, out_features=256, bias=True)
+          (ca_v_proj): Linear(in_features=256, out_features=256, bias=True)
+          (ca_qpos_sine_proj): Linear(in_features=256, out_features=256, bias=True)
+          (cross_attn): MultiheadAttentionLocal(
+            (out_proj): Linear(in_features=256, out_features=256, bias=True)
+          )
+          (linear1): Linear(in_features=256, out_features=1024, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (linear2): Linear(in_features=1024, out_features=256, bias=True)
+          (norm2): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+          (norm3): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+          (dropout2): Dropout(p=0.1, inplace=False)
+          (dropout3): Dropout(p=0.1, inplace=False)
+        )
+        (5): TransformerDecoderLayer(
+          (sa_qcontent_proj): Linear(in_features=256, out_features=256, bias=True)
+          (sa_qpos_proj): Linear(in_features=256, out_features=256, bias=True)
+          (sa_kcontent_proj): Linear(in_features=256, out_features=256, bias=True)
+          (sa_kpos_proj): Linear(in_features=256, out_features=256, bias=True)
+          (sa_v_proj): Linear(in_features=256, out_features=256, bias=True)
+          (self_attn): MultiheadAttention(
+            (out_proj): Linear(in_features=256, out_features=256, bias=True)
+          )
+          (norm1): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+          (dropout1): Dropout(p=0.1, inplace=False)
+          (ca_qcontent_proj): Linear(in_features=256, out_features=256, bias=True)
+          (ca_qpos_proj): Linear(in_features=256, out_features=256, bias=True)
+          (ca_kcontent_proj): Linear(in_features=256, out_features=256, bias=True)
+          (ca_kpos_proj): Linear(in_features=256, out_features=256, bias=True)
+          (ca_v_proj): Linear(in_features=256, out_features=256, bias=True)
+          (ca_qpos_sine_proj): Linear(in_features=256, out_features=256, bias=True)
+          (cross_attn): MultiheadAttentionLocal(
+            (out_proj): Linear(in_features=256, out_features=256, bias=True)
+          )
+          (linear1): Linear(in_features=256, out_features=1024, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (linear2): Linear(in_features=1024, out_features=256, bias=True)
+          (norm2): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+          (norm3): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+          (dropout2): Dropout(p=0.1, inplace=False)
+          (dropout3): Dropout(p=0.1, inplace=False)
+        )
+      )
+      (map_query_content_mlps): ModuleList(
+        (0): Linear(in_features=512, out_features=256, bias=True)
+        (1): Linear(in_features=512, out_features=256, bias=True)
+        (2): Linear(in_features=512, out_features=256, bias=True)
+        (3): Linear(in_features=512, out_features=256, bias=True)
+        (4): Linear(in_features=512, out_features=256, bias=True)
+        (5): Linear(in_features=512, out_features=256, bias=True)
+      )
+      (map_query_embed_mlps): Linear(in_features=512, out_features=256, bias=True)
+      (obj_pos_encoding_layer): Sequential(
+        (0): Linear(in_features=2, out_features=512, bias=True)
+        (1): ReLU()
+        (2): Linear(in_features=512, out_features=512, bias=True)
+        (3): ReLU()
+        (4): Linear(in_features=512, out_features=512, bias=True)
+      )
+      (dense_future_head): Sequential(
+        (0): Linear(in_features=1024, out_features=512, bias=False)
+        (1): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU()
+        (3): Linear(in_features=512, out_features=512, bias=False)
+        (4): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (5): ReLU()
+        (6): Linear(in_features=512, out_features=560, bias=True)
+      )
+      (future_traj_mlps): Sequential(
+        (0): Linear(in_features=320, out_features=512, bias=True)
+        (1): ReLU()
+        (2): Linear(in_features=512, out_features=512, bias=True)
+        (3): ReLU()
+        (4): Linear(in_features=512, out_features=512, bias=True)
+      )
+      (traj_fusion_mlps): Sequential(
+        (0): Linear(in_features=1024, out_features=512, bias=True)
+        (1): ReLU()
+        (2): Linear(in_features=512, out_features=512, bias=True)
+        (3): ReLU()
+        (4): Linear(in_features=512, out_features=512, bias=True)
+      )
+      (intention_query_mlps): Sequential(
+        (0): Linear(in_features=512, out_features=512, bias=False)
+        (1): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU()
+        (3): Linear(in_features=512, out_features=512, bias=True)
+      )
+      (query_feature_fusion_layers): ModuleList(
+        (0): Sequential(
+          (0): Linear(in_features=1280, out_features=512, bias=False)
+          (1): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (2): ReLU()
+          (3): Linear(in_features=512, out_features=512, bias=True)
+        )
+        (1): Sequential(
+          (0): Linear(in_features=1280, out_features=512, bias=False)
+          (1): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (2): ReLU()
+          (3): Linear(in_features=512, out_features=512, bias=True)
+        )
+        (2): Sequential(
+          (0): Linear(in_features=1280, out_features=512, bias=False)
+          (1): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (2): ReLU()
+          (3): Linear(in_features=512, out_features=512, bias=True)
+        )
+        (3): Sequential(
+          (0): Linear(in_features=1280, out_features=512, bias=False)
+          (1): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (2): ReLU()
+          (3): Linear(in_features=512, out_features=512, bias=True)
+        )
+        (4): Sequential(
+          (0): Linear(in_features=1280, out_features=512, bias=False)
+          (1): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (2): ReLU()
+          (3): Linear(in_features=512, out_features=512, bias=True)
+        )
+        (5): Sequential(
+          (0): Linear(in_features=1280, out_features=512, bias=False)
+          (1): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (2): ReLU()
+          (3): Linear(in_features=512, out_features=512, bias=True)
+        )
+      )
+      (motion_reg_heads): ModuleList(
+        (0): Sequential(
+          (0): Linear(in_features=512, out_features=512, bias=False)
+          (1): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (2): ReLU()
+          (3): Linear(in_features=512, out_features=512, bias=False)
+          (4): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (5): ReLU()
+          (6): Linear(in_features=512, out_features=560, bias=True)
+        )
+        (1): Sequential(
+          (0): Linear(in_features=512, out_features=512, bias=False)
+          (1): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (2): ReLU()
+          (3): Linear(in_features=512, out_features=512, bias=False)
+          (4): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (5): ReLU()
+          (6): Linear(in_features=512, out_features=560, bias=True)
+        )
+        (2): Sequential(
+          (0): Linear(in_features=512, out_features=512, bias=False)
+          (1): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (2): ReLU()
+          (3): Linear(in_features=512, out_features=512, bias=False)
+          (4): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (5): ReLU()
+          (6): Linear(in_features=512, out_features=560, bias=True)
+        )
+        (3): Sequential(
+          (0): Linear(in_features=512, out_features=512, bias=False)
+          (1): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (2): ReLU()
+          (3): Linear(in_features=512, out_features=512, bias=False)
+          (4): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (5): ReLU()
+          (6): Linear(in_features=512, out_features=560, bias=True)
+        )
+        (4): Sequential(
+          (0): Linear(in_features=512, out_features=512, bias=False)
+          (1): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (2): ReLU()
+          (3): Linear(in_features=512, out_features=512, bias=False)
+          (4): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (5): ReLU()
+          (6): Linear(in_features=512, out_features=560, bias=True)
+        )
+        (5): Sequential(
+          (0): Linear(in_features=512, out_features=512, bias=False)
+          (1): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (2): ReLU()
+          (3): Linear(in_features=512, out_features=512, bias=False)
+          (4): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (5): ReLU()
+          (6): Linear(in_features=512, out_features=560, bias=True)
+        )
+      )
+      (motion_cls_heads): ModuleList(
+        (0): Sequential(
+          (0): Linear(in_features=512, out_features=512, bias=False)
+          (1): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (2): ReLU()
+          (3): Linear(in_features=512, out_features=512, bias=False)
+          (4): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (5): ReLU()
+          (6): Linear(in_features=512, out_features=1, bias=True)
+        )
+        (1): Sequential(
+          (0): Linear(in_features=512, out_features=512, bias=False)
+          (1): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (2): ReLU()
+          (3): Linear(in_features=512, out_features=512, bias=False)
+          (4): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (5): ReLU()
+          (6): Linear(in_features=512, out_features=1, bias=True)
+        )
+        (2): Sequential(
+          (0): Linear(in_features=512, out_features=512, bias=False)
+          (1): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (2): ReLU()
+          (3): Linear(in_features=512, out_features=512, bias=False)
+          (4): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (5): ReLU()
+          (6): Linear(in_features=512, out_features=1, bias=True)
+        )
+        (3): Sequential(
+          (0): Linear(in_features=512, out_features=512, bias=False)
+          (1): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (2): ReLU()
+          (3): Linear(in_features=512, out_features=512, bias=False)
+          (4): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (5): ReLU()
+          (6): Linear(in_features=512, out_features=1, bias=True)
+        )
+        (4): Sequential(
+          (0): Linear(in_features=512, out_features=512, bias=False)
+          (1): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (2): ReLU()
+          (3): Linear(in_features=512, out_features=512, bias=False)
+          (4): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (5): ReLU()
+          (6): Linear(in_features=512, out_features=1, bias=True)
+        )
+        (5): Sequential(
+          (0): Linear(in_features=512, out_features=512, bias=False)
+          (1): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (2): ReLU()
+          (3): Linear(in_features=512, out_features=512, bias=False)
+          (4): SyncBatchNorm(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (5): ReLU()
+          (6): Linear(in_features=512, out_features=1, bias=True)
+        )
+      )
+    )
+  )
+)
+2025-06-05 15:49:17,570   INFO  Total number of parameters: 65781334
+2025-06-05 15:49:17,570   INFO  Start to load infos from /workspace/MTR-model/data/waymo/processed_scenarios_val_infos.pkl
+2025-06-05 15:49:17,858   INFO  Total scenes before filters: 44097
+2025-06-05 15:49:18,404   INFO  Total scenes after filter_info_by_object_type: 44097
+2025-06-05 15:49:18,405   INFO  Total scenes after filters: 44097
+2025-06-05 15:49:18,408   INFO  **********************Start training waymo/mtr+100_percent_data(testing_setup)**********************
+2025-06-05 15:49:26,281   INFO  epoch: 0/30, acc_iter=1, cur_iter=0/16234, batch_size=10, iter_cost=6.99s, time_cost(epoch): 00:06/31:32:23, time_cost(all): 00:07/946:11:58, ade_TYPE_VEHICLE_layer_5=19.606, ade_TYPE_PEDESTRIAN_layer_5=3.121, ade_TYPE_CYCLIST_layer_5=13.808, loss=109869.102, lr=0.0001
+2025-06-05 15:50:12,490   INFO  epoch: 0/30, acc_iter=50, cur_iter=49/16234, batch_size=10, iter_cost=1.06s, time_cost(epoch): 00:53/4:47:01, time_cost(all): 00:54/143:56:09, ade_TYPE_VEHICLE_layer_5=16.831, ade_TYPE_PEDESTRIAN_layer_5=3.215, ade_TYPE_CYCLIST_layer_5=7.811, loss=2962.990, lr=0.0001

@@ -35,6 +35,8 @@ class WaymoDataset(DatasetTemplate):
         for func_name, val in self.dataset_cfg.INFO_FILTER_DICT.items():
             infos = getattr(self, func_name)(infos, val)
 
+        infos = self.filter_info_by_validity(infos)
+
         return infos
 
     def filter_info_by_object_type(self, infos, valid_object_types=None):
@@ -52,13 +54,41 @@ class WaymoDataset(DatasetTemplate):
             if valid_mask.sum() == 0:
                 continue
 
-            assert len(cur_info['tracks_to_predict'].keys()) == 3, f"{cur_info['tracks_to_predict'].keys()}"
+            assert len(cur_info['tracks_to_predict'].keys()) == 5, f"{cur_info['tracks_to_predict'].keys()}"
             cur_info['tracks_to_predict']['track_index'] = list(np.array(cur_info['tracks_to_predict']['track_index'])[valid_mask])
             cur_info['tracks_to_predict']['object_type'] = list(np.array(cur_info['tracks_to_predict']['object_type'])[valid_mask])
             cur_info['tracks_to_predict']['difficulty'] = list(np.array(cur_info['tracks_to_predict']['difficulty'])[valid_mask])
+            cur_info['tracks_to_predict']['valid_20s'] = list(np.array(cur_info['tracks_to_predict']['valid_20s'])[valid_mask])
 
             ret_infos.append(cur_info)
         self.logger.info(f'Total scenes after filter_info_by_object_type: {len(ret_infos)}')
+        return ret_infos
+
+
+    def filter_info_by_validity(self, infos):
+        ret_infos = []
+        for cur_info in infos:
+            num_interested_agents = cur_info['tracks_to_predict']['track_index'].__len__()
+            if num_interested_agents == 0:
+                continue
+
+            valid_mask = []
+            for idx, cur_track_index in enumerate(cur_info['tracks_to_predict']['track_index']):
+                valid_mask.append(cur_info['tracks_to_predict']['valid_20s'][idx]==1)
+
+            valid_mask = np.array(valid_mask) > 0
+            if valid_mask.sum() == 0:
+                continue
+
+            assert len(cur_info['tracks_to_predict'].keys()) == 5, f"{cur_info['tracks_to_predict'].keys()}"
+            cur_info['tracks_to_predict']['track_index'] = list(np.array(cur_info['tracks_to_predict']['track_index'])[valid_mask])
+            cur_info['tracks_to_predict']['object_type'] = list(np.array(cur_info['tracks_to_predict']['object_type'])[valid_mask])
+            cur_info['tracks_to_predict']['difficulty'] = list(np.array(cur_info['tracks_to_predict']['difficulty'])[valid_mask])
+            cur_info['tracks_to_predict']['valid_20s'] = list(np.array(cur_info['tracks_to_predict']['valid_20s'])[valid_mask])
+
+            ret_infos.append(cur_info)
+
+        # self.logger.info(f'Total scenes after filter_info_by_object_type: {len(ret_infos)}')
         return ret_infos
 
     def __len__(self):
@@ -77,23 +107,26 @@ class WaymoDataset(DatasetTemplate):
         Returns:
 
         """
-        info = self.infos[index]
-        scene_id = info['scenario_id']
+        old_info = self.infos[index]
+        scene_id = old_info['scenario_id']
         with open(self.data_path / f'sample_{scene_id}.pkl', 'rb') as f:
             info = pickle.load(f)
 
         sdc_track_index = info['sdc_track_index']
         current_time_index = info['current_time_index']
-        timestamps = np.array(info['timestamps_seconds'][:current_time_index + 1], dtype=np.float32)
+        # current_time_index = 10
+
+        timestamps = np.array(info['timestamps_seconds'][10:current_time_index + 1], dtype=np.float32)
 
         track_infos = info['track_infos']
 
-        track_index_to_predict = np.array(info['tracks_to_predict']['track_index'])
+        track_index_to_predict = np.array(old_info['tracks_to_predict']['track_index'])
         obj_types = np.array(track_infos['object_type'])
         obj_ids = np.array(track_infos['object_id'])
         obj_trajs_full = track_infos['trajs']  # (num_objects, num_timestamp, 10)
-        obj_trajs_past = obj_trajs_full[:, :current_time_index + 1]
+        obj_trajs_past = obj_trajs_full[:, 10:current_time_index + 1]
         obj_trajs_future = obj_trajs_full[:, current_time_index + 1:]
+        # obj_trajs_future = obj_trajs_full[:, current_time_index + 1:current_time_index+11] # to restrict the ground truth to 1 sec in future
 
         center_objects, track_index_to_predict = self.get_interested_agents(
             track_index_to_predict=track_index_to_predict,
@@ -109,6 +142,8 @@ class WaymoDataset(DatasetTemplate):
             track_index_to_predict=track_index_to_predict, sdc_track_index=sdc_track_index,
             timestamps=timestamps, obj_types=obj_types, obj_ids=obj_ids
         )
+
+        # print(obj_trajs_data.shape, 'object trajs data shape')
 
         ret_dict = {
             'scenario_id': np.array([scene_id] * len(track_index_to_predict)),
@@ -174,6 +209,8 @@ class WaymoDataset(DatasetTemplate):
         obj_trajs_future_mask = obj_trajs_future_mask[:, valid_past_mask]  # (num_center_objects, num_objects, num_timestamps_future):
         obj_types = obj_types[valid_past_mask]
         obj_ids = obj_ids[valid_past_mask]
+
+        # print(obj_trajs_data.shape, 'object trajs data shape after filtering')
 
         valid_index_cnt = valid_past_mask.cumsum(axis=0)
         track_index_to_predict_new = valid_index_cnt[track_index_to_predict] - 1
@@ -283,6 +320,7 @@ class WaymoDataset(DatasetTemplate):
             center_heading=center_objects[:, 6],
             heading_index=6, rot_vel_index=[7, 8]
         )
+        # print('object trajs past shape', obj_trajs_past.shape)
 
         ## generate the attributes for each object
         object_onehot_mask = torch.zeros((num_center_objects, num_objects, num_timestamps, 5))
@@ -314,8 +352,18 @@ class WaymoDataset(DatasetTemplate):
             acce,
         ), dim=-1)
 
+        # print(obj_trajs[:, :, :, 0:6].shape, 'object trajs shape')
+        # print(object_onehot_mask.shape, 'object onehot mask shape')
+        # print(object_time_embedding.shape, 'object time embedding shape')
+        # print(object_heading_embedding.shape, 'object heading embedding shape')
+        # print(obj_trajs[:, :, :, 7:9].shape, 'object velocity shape')
+        # print(acce.shape, 'object acceleration shape')  
+        # print('ret_obj_trajs shape:', ret_obj_trajs.shape)
+
         ret_obj_valid_mask = obj_trajs[:, :, :, -1]  # (num_center_obejcts, num_objects, num_timestamps)  # TODO: CHECK THIS, 20220322
         ret_obj_trajs[ret_obj_valid_mask == 0] = 0
+
+        # print('ret_obj_trajs shape:', ret_obj_trajs.shape)
 
         ##  generate label for future trajectories
         obj_trajs_future = torch.from_numpy(obj_trajs_future).float()
@@ -512,14 +560,16 @@ class WaymoDataset(DatasetTemplate):
 
         return pred_dict_list
 
-    def evaluation(self, pred_dicts, output_path=None, eval_method='waymo', **kwargs):
+    def evaluation(self, pred_dicts, output_path=None, eval_method='waymo', eval_sec= 8, **kwargs):
         if eval_method == 'waymo':
             from .waymo_eval import waymo_evaluation
             try:
                 num_modes_for_eval = pred_dicts[0][0]['pred_trajs'].shape[0]
             except:
                 num_modes_for_eval = 6
-            metric_results, result_format_str = waymo_evaluation(pred_dicts=pred_dicts, num_modes_for_eval=num_modes_for_eval)
+                
+
+            metric_results, result_format_str = waymo_evaluation(pred_dicts=pred_dicts, eval_second=eval_sec, num_modes_for_eval=num_modes_for_eval)
 
             metric_result_str = '\n'
             for key in metric_results:
@@ -527,10 +577,35 @@ class WaymoDataset(DatasetTemplate):
                 metric_result_str += '%s: %.4f \n' % (key, metric_results[key])
             metric_result_str += '\n'
             metric_result_str += result_format_str
+
         else:
             raise NotImplementedError
 
         return metric_result_str, metric_results
+
+    def evaluation_custom(self, pred_dicts, output_path=None, eval_method='waymo', eval_sec= 8, **kwargs):
+        if eval_method == 'waymo':
+            from .waymo_eval import waymo_evaluation_custom
+            try:
+                num_modes_for_eval = pred_dicts[0][0]['pred_trajs'].shape[0]
+            except:
+                num_modes_for_eval = 6
+                
+
+            mAP, minADE, minFDE, missRate = waymo_evaluation_custom(pred_dicts=pred_dicts, eval_second=eval_sec, num_modes_for_eval=num_modes_for_eval)
+
+            # metric_result_str = '\n'
+            # for key in metric_results:
+            #     metric_results[key] = metric_results[key]
+            #     metric_result_str += '%s: %.4f \n' % (key, metric_results[key])
+            # metric_result_str += '\n'
+            # metric_result_str += result_format_str
+
+        else:
+            raise NotImplementedError
+
+        # return metric_result_str, metric_results
+        return mAP, minADE, minFDE, missRate
 
 
 if __name__ == '__main__':
